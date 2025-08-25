@@ -1,0 +1,75 @@
+# ==============================================================================
+# FICHIER DE CONFIGURATION PRINCIPAL POUR INTELLITEST-ARCHITECT
+# Ce fichier centralise tous les paramètres de l'application.
+# Modifiez ces valeurs pour adapter le comportement de la génération de tests.
+# ==============================================================================
+
+# --- Section du projet cible ---
+# Spécifiez le chemin vers le répertoire du projet logiciel que vous souhaitez analyser et tester.
+# Le chemin doit être absolu pour éviter toute ambiguïté.
+# Exemple sur Linux: "/root/projets/mon_app"
+# Exemple sur Windows: "C:/Users/mon_user/Documents/mon_app"
+project_path: "/root/projets/AutoFineTune"
+
+# --- Section de sélection du modèle de langage (LLM) ---
+# Configurez ici le fournisseur de LLM à utiliser pour la génération.
+# Une seule section de fournisseur (ollama, hugging_face, ou api) doit être activée.
+llm_provider: "ollama" # Valeurs possibles: "ollama", "hugging_face", "api"
+
+# Configuration pour une utilisation avec Ollama (local)
+ollama:
+  # L'URL de base de votre instance Ollama.
+  base_url: "http://82.29.172.185:11434"
+  # Le nom du modèle que vous avez téléchargé avec `ollama pull <nom_du_modele>`
+  model_name: "gemma3:1b"
+
+# Configuration pour une utilisation avec un modèle du Hub Hugging Face (local)
+hugging_face:
+  # L'identifiant du modèle sur le Hub Hugging Face.
+  # Le système tentera de le télécharger si il n'est pas en cache.
+  # Par défaut, nous utilisons un modèle performant et léger.
+  model_id: "google/gemma-3-270m"
+
+# Configuration pour une API externe (compatible OpenAI, comme OpenRouter, Groq, etc.)
+api:
+  # L'URL de base de l'API.
+  base_url: "https://api.openrouter.ai/v1"
+  # Le nom du modèle tel que spécifié par le fournisseur de l'API.
+  model_name: "google/gemma-7b-it"
+  # Votre clé API. Il est FORTEMENT recommandé d'utiliser une variable d'environnement.
+  # Le système cherchera la variable d'environnement 'API_KEY'. Si non trouvée, il utilisera cette valeur.
+  # Laisser vide pour forcer l'utilisation de la variable d'environnement.
+  api_key: "" # Exemple: "sk-or-v1-..."
+
+# --- Section des hyperparamètres du LLM ---
+# Ajustez ces paramètres pour contrôler la créativité et la longueur des réponses du LLM.
+generation_config:
+  # Température: contrôle le caractère aléatoire. Plus la valeur est élevée (ex: 0.8),
+  # plus la sortie sera créative. Plus elle est basse (ex: 0.2), plus elle sera déterministe.
+  temperature: 0.4
+  # Max new tokens: Le nombre maximum de "mots" (tokens) à générer dans une seule réponse.
+  # À ajuster en fonction de la complexité des tests que vous souhaitez générer.
+  max_new_tokens: 2048
+
+# --- Section des documents à générer ---
+# Activez (true) ou désactivez (false) la génération de chaque type d'artefact de test.
+# Cela vous permet de personnaliser la sortie en fonction de vos besoins spécifiques.
+documents_to_generate:
+  - name: "Plan de Test Global"
+    enabled: true
+    prompt: "Analyse ce projet et génère un plan de test global au format Markdown. Décris la stratégie de test, les fonctionnalités à couvrir, les types de tests à effectuer et les critères de succès."
+  - name: "Tests d'Intégration"
+    enabled: true
+    prompt: "Rédige des scénarios de tests d'intégration pour ce projet au format Markdown. Identifie les points d'interaction clés entre les modules et décris les tests pour vérifier leur collaboration."
+  - name: "Tests Unitaires (BDD)"
+    enabled: true
+    prompt: "Génère des scénarios de test au format Gherkin (fichiers .feature) pour les fonctionnalités clés de ce projet. Pour chaque fonctionnalité, écris des scénarios 'Given-When-Then'."
+
+# --- Section de correction automatique ---
+# Fonctionnalité expérimentale : permet au LLM de tenter de corriger le code source.
+auto_correction:
+  # Activer ou désactiver la fonctionnalité de correction automatique.
+  enabled: false
+  # Si activé, créer une sauvegarde (.zip) du répertoire du projet avant toute modification.
+  # C'est une mesure de sécurité FORTEMENT recommandée si la correction est activée.
+  backup_before_correction: true
